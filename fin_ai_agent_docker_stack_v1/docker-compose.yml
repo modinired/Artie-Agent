@@ -1,0 +1,75 @@
+
+version: "3.9"
+services:
+  hub:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: finai_hub
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - HUB_API_KEY=${HUB_API_KEY}
+      - HUB_ALLOWED_IPS=${HUB_ALLOWED_IPS}
+      - HUB_API_SCOPES=${HUB_API_SCOPES}
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+      - PORT=${PORT}
+    volumes:
+      - ./:/app
+      - hub_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - finai
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.scheduler
+    container_name: finai_scheduler
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - HUB_API_KEY=${HUB_API_KEY}
+      - HUB_ALLOWED_IPS=${HUB_ALLOWED_IPS}
+      - HUB_API_SCOPES=${HUB_API_SCOPES}
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+    depends_on:
+      - hub
+    volumes:
+      - ./:/app
+      - hub_data:/app/data
+    networks:
+      - finai
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: finai_nginx
+    depends_on:
+      - hub
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NGINX_SERVER_NAME=${NGINX_SERVER_NAME}
+      - NGINX_SSL_CERT=${NGINX_SSL_CERT}
+      - NGINX_SSL_KEY=${NGINX_SSL_KEY}
+      - NGINX_CA_CERT=${NGINX_CA_CERT}
+      - ENABLE_MTLS=${ENABLE_MTLS}
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    entrypoint: ["/bin/sh", "/etc/nginx/templates/../entrypoint.sh"]
+    networks:
+      - finai
+
+volumes:
+  hub_data:
+
+networks:
+  finai:
+    driver: bridge

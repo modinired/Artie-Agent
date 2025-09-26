@@ -1,0 +1,17 @@
+[Unit]
+Description=Unified Hub (UI + API)
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=%h/fin_ai_agent
+Environment="HUB_API_KEY=CHANGE_THIS_LONG_RANDOM_KEY"
+# Optional scopes mapping as JSON
+# Environment="HUB_API_SCOPES={\"CHANGE_THIS_LONG_RANDOM_KEY\":[\"rd.run\",\"rd.crisis\",\"kb.read\",\"kb.write\",\"smartsauce.write\",\"terry.harvest\",\"events.read\"]}"
+ExecStart=%h/fin_ai_agent/.venv/bin/uvicorn agent.app.server:app --host 127.0.0.1 --port 8010
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

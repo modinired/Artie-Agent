@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Unified Hub</title>
+<style>body{font-family:system-ui,Arial;margin:24px} .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0} .bubble{background:#f7fafc;padding:12px;border-radius:16px;margin:6px 0} .meta{color:#666;font-size:12px}</style>
+</head><body>
+<h1>Unified Hub (UI + API)</h1>
+<div class="card"><h2>Events</h2>
+{% for e in events %}<div class="bubble"><div class="meta">{{e.ts}} • <strong>{{e.agent}}</strong> • {{e.event_type}}</div><div>{{e.message}}</div></div>{% endfor %}
+</div>
+<div class="card"><h2>Daily Summaries</h2>
+{% for s in summaries %}<div class="bubble"><div class="meta">{{s.date}}</div><div><strong>User:</strong> {{s.user_summary}}</div><div><strong>LLM:</strong> {{s.llm_summary}}</div><div><strong>Financial:</strong> {{s.financial_summary}}</div><div><strong>Automation:</strong> {{s.automation_summary}}</div></div>{% endfor %}
+</div>
+</body></html>
