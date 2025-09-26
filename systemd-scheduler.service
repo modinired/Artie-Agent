@@ -1,0 +1,14 @@
+[Unit]
+Description=Agent Scheduler
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=%h/fin_ai_agent
+ExecStart=%h/fin_ai_agent/.venv/bin/python -m agent.scheduler.runner
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
