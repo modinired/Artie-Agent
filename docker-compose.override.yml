@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  terry-app:
+    build: .
+    image: terry-app:latest
+    environment:
+      POSTGRES_DSN: ${POSTGRES_DSN}
+      FRED_API_KEY: ${FRED_API_KEY}
+      N8N_BASE_URL: ${N8N_BASE_URL}
+      N8N_API_KEY: ${N8N_API_KEY}
+      POLYGON_API_KEY: ${POLYGON_API_KEY}
+      SEC_USER_AGENT: ${SEC_USER_AGENT:-"TerryApp/1.0 you@example.com"}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      SLACK_CHANNEL: ${SLACK_CHANNEL}
+      TERRY_USERS: ${TERRY_USERS}
+      TERRY_JWT_SECRET: ${TERRY_JWT_SECRET}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - automation_matrix

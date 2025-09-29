@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Terry Control Panel</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui; margin: 0; background: #0b0b0f; color: #e7e7ec; }
+    header { padding: 16px; background: #11131a; border-bottom: 1px solid #1f2230; }
+    .container { padding: 16px; display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+    section { background: #141826; border: 1px solid #1f2230; border-radius: 12px; padding: 16px; }
+    input, textarea, button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #2a2e42; background: #0f1220; color: #e7e7ec; }
+    button { cursor: pointer; }
+    h2 { margin-top: 0; }
+    pre { white-space: pre-wrap; word-break: break-word; background:#0f1220; padding:10px; border-radius:8px; }
+  </style>
+</head>
+<body>
+<header><h1>🧠 Terry Control Panel</h1></header>
+<div class="container">
+  <section>
+    <h2>Ad-hoc Task</h2>
+    <input id="task" placeholder="e.g., generate macro briefing and post to slack"/>
+    <button onclick="runTask()">Run Task</button>
+    <pre id="taskOut"></pre>
+  </section>
+  <section>
+    <h2>Earnings Digest</h2>
+    <input id="ticker" placeholder="AAPL"/>
+    <button onclick="earnings()">Fetch</button>
+    <pre id="earnOut"></pre>
+  </section>
+  <section>
+    <h2>RAG Search</h2>
+    <input id="q" placeholder="recursive cognition"/>
+    <button onclick="search()">Search</button>
+    <pre id="ragOut"></pre>
+  </section>
+  <section>
+    <h2>Admin</h2>
+    <button onclick="refresh()">Refresh Keys</button>
+    <button onclick="reload()">Reload Descriptors</button>
+    <pre id="adminOut"></pre>
+  </section>
+</div>
+<script>
+const base = location.origin;
+
+async function runTask(){
+  const r = await fetch(base + "/api/task",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task:document.getElementById('task').value})});
+  document.getElementById('taskOut').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function earnings(){
+  const r = await fetch(base + "/api/analysis/earnings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticker:document.getElementById('ticker').value||'AAPL'})});
+  document.getElementById('earnOut').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function search(){
+  const r = await fetch(base + "/api/knowledge/search_fallback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:document.getElementById('q').value||'recursive cognition',k:5})});
+  document.getElementById('ragOut').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function refresh(){
+  const r = await fetch(base + "/api/admin/refresh-keys",{method:"POST"});
+  document.getElementById('adminOut').textContent = JSON.stringify(await r.json(), null, 2);
+}
+async function reload(){
+  const r = await fetch(base + "/api/admin/reload-descriptors",{method:"POST"});
+  document.getElementById('adminOut').textContent = JSON.stringify(await r.json(), null, 2);
+}
+</script>
+</body>
+</html>
